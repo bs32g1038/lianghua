@@ -9,8 +9,8 @@ import newChart from './components/chart/index.vue';
 const router = new VueRouter({
     mode: 'hash',
     routes: [
-        { path: '/', redirect: '/new-chart' },
-        { path: '/new-chart', component: newChart },
+        { path: '/', redirect: '/lianghua' },
+        { path: '/lianghua', component: newChart },
     ],
 });
 

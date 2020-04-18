@@ -44,6 +44,23 @@ export default {
             return false;
         });
 
+        console.log(
+            longData
+                .map((item) => {
+                    return [item.close_date, item.close];
+                })
+                .concat(
+                    longData.map(function (item) {
+                        return [item.open_date, item.open];
+                    })
+                )
+                .sort(function (a, b) {
+                    var x = moment(handleTime(a[0])).valueOf();
+                    var y = moment(handleTime(b[0])).valueOf();
+                    return x <= y;
+                })
+        );
+
         var myChart = echarts.init(document.getElementById('chart'));
         // 绘制图表
         myChart.setOption({
@@ -52,7 +69,25 @@ export default {
                 left: 0,
             },
             legend: {
-                data: ['小时K', 'long止损--开盘', 'long止损--收盘', 'short平仓--开盘', 'short平仓--收盘'],
+                data: [
+                    '完整-小时K线',
+                    '简易-小时k线',
+                    'long止损--开盘',
+                    'long止损--收盘',
+                    'short平仓--开盘',
+                    'short平仓--收盘',
+                    'long止损-k线',
+                    'short平仓-k线',
+                ],
+                selected: {
+                    '完整-小时K线': false,
+                    'long止损--开盘': false,
+                    'long止损--收盘': false,
+                    'short平仓--开盘': false,
+                    'short平仓--收盘': false,
+                    'long止损-k线': false,
+                    'short平仓-k线': false,
+                },
             },
             // tooltip: {
             //     trigger: 'axis',
@@ -173,7 +208,7 @@ export default {
             // ],
             series: [
                 {
-                    name: '小时K',
+                    name: '完整-小时K线',
                     type: 'candlestick',
                     data: data0.values,
                     itemStyle: {
@@ -268,19 +303,19 @@ export default {
                         ],
                     },
                 },
-                // {
-                //     name: '趋势走线',
-                //     type: 'line',
-                //     data: data.map(function (item) {
-                //         return item.Open;
-                //     }),
-                //     hoverAnimation: false,
-                //     symbolSize: 6,
-                //     itemStyle: {
-                //         color: 'steelblue',
-                //     },
-                //     showSymbol: false,
-                // },
+                {
+                    name: '简易-小时k线',
+                    type: 'line',
+                    data: data.map(function (item) {
+                        return [item.Date, item.Open, item.Close, item.Low, item.High];
+                    }),
+                    hoverAnimation: false,
+                    symbolSize: 6,
+                    itemStyle: {
+                        color: 'steelblue',
+                    },
+                    showSymbol: false,
+                },
                 {
                     name: 'long止损--开盘',
                     emphasis: {
@@ -334,7 +369,7 @@ export default {
                         color: 'red',
                     },
                     data: shortData.map(function (item) {
-                        return [moment(handleTime(item.open_date)).format('YYYY-MM-DD hh:ss'), item.open];
+                        return [item.open_date, item.open];
                     }),
                     type: 'scatter',
                 },
@@ -353,26 +388,48 @@ export default {
                         color: '#800080',
                     },
                     data: shortData.map((item) => {
-                        return [moment(handleTime(item.close_date)).format('YYYY-MM-DD hh:ss'), item.close];
+                        return [item.close_date, item.close];
                     }),
                     type: 'scatter',
                 },
                 {
-                    name: 'MA30',
+                    name: 'long止损-k线',
                     type: 'line',
-                    data: shortData
+                    data: longData
                         .map((item) => {
-                            return [moment(handleTime(item.close_date)).format('YYYY-MM-DD hh:ss'), item.close];
+                            return [item.close_date, item.close];
                         })
                         .concat(
-                            shortData.map(function (item) {
-                                return [moment(handleTime(item.open_date)).format('YYYY-MM-DD hh:ss'), item.open];
+                            longData.map(function (item) {
+                                return [item.open_date, item.open];
                             })
                         )
                         .sort(function (a, b) {
-                            var x = a[0];
-                            var y = b[0];
-                            return x > y ? -1 : x < y ? 1 : 0;
+                            var x = moment(handleTime(a[0])).valueOf();
+                            var y = moment(handleTime(b[0])).valueOf();
+                            return x <= y;
+                        }),
+                    smooth: true,
+                    lineStyle: {
+                        opacity: 0.5,
+                    },
+                },
+                {
+                    name: 'short平仓-k线',
+                    type: 'line',
+                    data: shortData
+                        .map((item) => {
+                            return [item.close_date, item.close];
+                        })
+                        .concat(
+                            shortData.map(function (item) {
+                                return [item.open_date, item.open];
+                            })
+                        )
+                        .sort(function (a, b) {
+                            var x = moment(handleTime(a[0])).valueOf();
+                            var y = moment(handleTime(b[0])).valueOf();
+                            return x <= y;
                         }),
                     smooth: false,
                     lineStyle: {
