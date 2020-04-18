@@ -44,28 +44,11 @@ export default {
             return false;
         });
 
-        console.log(
-            longData
-                .map((item) => {
-                    return [item.close_date, item.close];
-                })
-                .concat(
-                    longData.map(function (item) {
-                        return [item.open_date, item.open];
-                    })
-                )
-                .sort(function (a, b) {
-                    var x = moment(handleTime(a[0])).valueOf();
-                    var y = moment(handleTime(b[0])).valueOf();
-                    return x <= y;
-                })
-        );
-
         var myChart = echarts.init(document.getElementById('chart'));
         // 绘制图表
         myChart.setOption({
             title: {
-                text: '量化交易对比曲线图',
+                text: '量化交易曲线图',
                 left: 0,
             },
             legend: {
@@ -89,33 +72,6 @@ export default {
                     'short平仓-k线': false,
                 },
             },
-            // tooltip: {
-            //     trigger: 'axis',
-            //     axisPointer: {
-            //         type: 'cross',
-            //         animation: false,
-            //         label: {
-            //             backgroundColor: '#ccc',
-            //             borderColor: '#aaa',
-            //             borderWidth: 1,
-            //             shadowBlur: 0,
-            //             shadowOffsetX: 0,
-            //             shadowOffsetY: 0,
-            //             color: '#222',
-            //         },
-            //     },
-            //     formatter: (params) => {
-            //         let htmlF = '';
-            //         params.forEach((item) => {
-            //             htmlF += `<div class="tip">
-            //                 <h3>名称：${item.seriesName}</h3>
-            //                 <p>时间：${item.name}</p>
-            //                 <p>价格：${item.value}</p>
-            //               </div>`;
-            //         });
-            //         return htmlF;
-            //     },
-            // },
             tooltip: {
                 trigger: 'axis',
                 axisPointer: {
@@ -130,18 +86,6 @@ export default {
             },
             xAxis: {
                 type: 'category',
-                // data: data.reverse().map(function (item) {
-                //     return moment(handleTime(item.Date)).format('YYYY-MM-DD hh:mm');
-                // }),
-                // axisLabel: {
-                //     formatter: function (value, idx) {
-                //         var date = new Date(value);
-                //         return idx === 0 ? value : [date.getMonth() + 1, date.getDate()].join('-');
-                //     },
-                // },
-                // splitLine: {
-                //     show: false,
-                // },
                 boundaryGap: false,
                 data: data0.categoryData,
                 scale: true,
@@ -397,18 +341,12 @@ export default {
                     type: 'line',
                     data: longData
                         .map((item) => {
-                            return [item.close_date, item.close];
+                            return [
+                                [item.open_date, item.open],
+                                [item.close_date, item.close],
+                            ];
                         })
-                        .concat(
-                            longData.map(function (item) {
-                                return [item.open_date, item.open];
-                            })
-                        )
-                        .sort(function (a, b) {
-                            var x = moment(handleTime(a[0])).valueOf();
-                            var y = moment(handleTime(b[0])).valueOf();
-                            return x <= y;
-                        }),
+                        .flat(),
                     smooth: true,
                     lineStyle: {
                         opacity: 0.5,
@@ -419,18 +357,12 @@ export default {
                     type: 'line',
                     data: shortData
                         .map((item) => {
-                            return [item.close_date, item.close];
+                            return [
+                                [item.open_date, item.open],
+                                [item.close_date, item.close],
+                            ];
                         })
-                        .concat(
-                            shortData.map(function (item) {
-                                return [item.open_date, item.open];
-                            })
-                        )
-                        .sort(function (a, b) {
-                            var x = moment(handleTime(a[0])).valueOf();
-                            var y = moment(handleTime(b[0])).valueOf();
-                            return x <= y;
-                        }),
+                        .flat(),
                     smooth: false,
                     lineStyle: {
                         opacity: 0.5,
